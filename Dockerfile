@@ -1,20 +1,14 @@
-# Use the official Kafka base image
-FROM confluentinc/cp-kafka:latest
+# Use the wurstmeister/kafka image as the base
+FROM wurstmeister/kafka:latest
 
-# Install necessary tools
-RUN apt-get update && \
-    apt-get install -y netcat
+# Set environment variables for Kafka configuration
+ENV KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+ENV KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+ENV KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+ENV KAFKA_BROKER_ID=1
 
-# Copy entry script to the container
-COPY entry.sh /usr/bin/entry.sh
-RUN chmod +x /usr/bin/entry.sh
+# Expose the Kafka and Zookeeper ports
+EXPOSE 9092 2181
 
-# Expose the necessary ports
-EXPOSE 9092
-
-# Environment variables for Kafka configuration
-ENV KAFKA_ADVERTISED_LISTENERS INSIDE://kafka:9093,OUTSIDE://localhost:9092
-ENV KAFKA_LISTENER_SECURITY_PROTOCOL_MAP INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-ENV KAFKA_LISTENERS INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
-ENV KAFKA_INTER_BROKER_LISTENER_NAME INSIDE
-ENV KAFKA_ZOOKEEPER_CONNECT zookeeper:2181
+# Wait for Kafka to be ready and create Kafka topics
+CMD ["bash", "-c", "sleep 10 && /opt/kafka/bin/kafka-topics.sh --create --topic user_topic --bootstrap-server localhost:9092  && /opt/kafka/bin/kafka-topics.sh --create --topic location_topic --bootstrap-server localhost:9092  && start-kafka.sh"]
