@@ -1,5 +1,5 @@
 # Use the wurstmeister/kafka image as the base
-FROM wurstmeister/kafka:latest
+FROM wurstmeister/kafka:2.8.0
 
 # Set environment variables for Kafka configuration
 ENV KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,http://localhost:8082
@@ -15,10 +15,10 @@ COPY wait-for-kafka.sh /usr/bin/wait-for-kafka.sh
 RUN chmod +x /usr/bin/wait-for-kafka.sh
 
 # Install Kafka REST Proxy
-RUN wget https://github.com/confluentinc/kafka-rest/releases/download/v6.1.1/confluentinc-kafka-rest-6.1.1.tar.gz \
-    && tar -xzvf confluentinc-kafka-rest-6.1.1.tar.gz \
-    && mv confluent-6.1.1 /opt/kafka-rest \
-    && rm confluentinc-kafka-rest-6.1.1.tar.gz
+RUN curl -LJO https://github.com/confluentinc/kafka-rest/archive/refs/tags/v6.1.1.tar.gz \
+    && tar -xzvf kafka-rest-6.1.1.tar.gz \
+    && mv kafka-rest-6.1.1 /opt/kafka-rest \
+    && rm kafka-rest-6.1.1.tar.gz
 
 # Wait for Kafka to be ready, create Kafka topics, and start Kafka and Kafka REST Proxy
 CMD ["bash", "-c", "/usr/bin/wait-for-kafka.sh && /opt/kafka/bin/kafka-topics.sh --create --topic location --bootstrap-server localhost:9092 && /opt/kafka/bin/kafka-topics.sh --create --topic user --bootstrap-server localhost:9092 && /opt/kafka-rest/bin/kafka-rest-start /opt/kafka-rest/etc/kafka-rest/kafka-rest.properties && start-kafka.sh"]
