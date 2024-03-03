@@ -10,9 +10,5 @@ ENV KAFKA_BROKER_ID=1
 # Expose the Kafka and Zookeeper ports
 EXPOSE 9092 2181
 
-# Copy the script for waiting until Kafka is ready
-COPY wait-for-kafka.sh /usr/bin/wait-for-kafka.sh
-RUN chmod +x /usr/bin/wait-for-kafka.sh
-
 # Create Kafka topics
 CMD ["bash", "-c", "/opt/kafka/bin/kafka-topics.sh --create --topic user_topic --bootstrap-server localhost:9092 && /opt/kafka/bin/kafka-topics.sh --create --topic location_topic --bootstrap-server localhost:9092 && start-kafka.sh"]
