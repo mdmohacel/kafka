@@ -1,5 +1,5 @@
-# Use the confluentinc/cp-zookeeper:latest image as the base
-FROM confluentinc/cp-zookeeper:latest
+# Use the wurstmeister/kafka image as the base
+FROM wurstmeister/kafka:latest
 
 # Set environment variables for Kafka configuration
 ENV KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
@@ -10,5 +10,5 @@ ENV KAFKA_BROKER_ID=1
 # Expose the Kafka and Zookeeper ports
 EXPOSE 9092 2181
 
-# Create Kafka topics
-CMD ["bash", "-c", "/opt/kafka/bin/kafka-topics.sh --create --topic user_topic --bootstrap-server localhost:9092 && /opt/kafka/bin/kafka-topics.sh --create --topic location_topic --bootstrap-server localhost:9092 && start-kafka.sh"]
+# Wait for Kafka to be ready, create Kafka topics, and start Kafka
+CMD ["bash", "-c", "sleep 50 && /opt/kafka/bin/kafka-topics.sh --create --topic location --bootstrap-server localhost:9092 && /opt/kafka/bin/kafka-topics.sh --create --topic user --bootstrap-server localhost:9092 && start-kafka.sh"]
