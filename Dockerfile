@@ -1,5 +1,5 @@
 # Use the wurstmeister/kafka image as the base
-FROM wurstmeister/kafka:2.8.0
+FROM wurstmeister/kafka:latest
 
 # Set environment variables for Kafka configuration
 ENV KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,http://localhost:8082
@@ -13,6 +13,12 @@ EXPOSE 9092 2181 8082
 # Copy the script for waiting until Kafka is ready
 COPY wait-for-kafka.sh /usr/bin/wait-for-kafka.sh
 RUN chmod +x /usr/bin/wait-for-kafka.sh
+
+# Install Kafka 3.7.0 and Kafka REST Proxy
+RUN curl -LJO https://archive.apache.org/dist/kafka/3.7.0/kafka_2.12-3.7.0.tgz \
+    && tar -xzvf kafka_2.12-3.7.0.tgz \
+    && mv kafka_2.12-3.7.0 /opt/kafka \
+    && rm kafka_2.12-3.7.0.tgz
 
 # Install Kafka REST Proxy
 RUN curl -LJO https://github.com/confluentinc/kafka-rest/archive/refs/tags/v6.1.1.tar.gz \
